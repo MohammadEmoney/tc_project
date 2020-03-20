@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\PhoneNumber;
+use App\Jobs\CreatePhoneJob;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -37,7 +38,11 @@ class PhoneController extends Controller implements PhoneNumber
         $this->validator($request->all())->validate();
 
         if(method_exists($this, 'phoneType')){
+
             $this->phoneType($request->phone);
+
+            CreatePhoneJob::dispatch($request->phone)->onQueue($this->phone_type);
+
             return response()->json($this->phone_type);
         }
 
