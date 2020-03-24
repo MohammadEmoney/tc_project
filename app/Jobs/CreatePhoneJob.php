@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\NewRegisterPhone;
 use App\Phone;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,9 +35,11 @@ class CreatePhoneJob implements ShouldQueue
     public function handle()
     {
         $token = Str::random(30);
-        Phone::create([
+        $phone =  Phone::create([
             'token' => $token,
             'phone_number' => $this->phoneNumber
         ]);
+
+        event(new NewRegisterPhone($phone));
     }
 }
